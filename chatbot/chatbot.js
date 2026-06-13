@@ -1,5 +1,14 @@
 import { chatService } from '../services/chat_service.js';
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 export function renderChatbot(container) {
   let log = [
     {
@@ -31,7 +40,10 @@ export function renderChatbot(container) {
 
   const render = () => {
     chat.innerHTML = log
-      .map((m) => `<div class="msg user">You: ${m.q}</div><div class="msg assistant">Assistant: ${m.a}</div>`)
+      .map(
+        (m) =>
+          `<div class="msg user">You: ${escapeHtml(m.q)}</div><div class="msg assistant">Assistant: ${escapeHtml(m.a)}</div>`
+      )
       .join('');
     chat.scrollTop = chat.scrollHeight;
   };

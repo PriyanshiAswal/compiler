@@ -1,6 +1,15 @@
 import { documentService } from '../services/document_service.js';
 import { chatService } from '../services/chat_service.js';
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 export function renderDocuments(container) {
   let selectedId = null;
   let activeRows = documentService.list();
@@ -58,7 +67,7 @@ export function renderDocuments(container) {
     chatBox.innerHTML = chatLog
       .map(
         (entry) =>
-          `<div class="msg user">You: ${entry.q}</div><div class="msg assistant">Assistant: ${entry.a}</div>`
+          `<div class="msg user">You: ${escapeHtml(entry.q)}</div><div class="msg assistant">Assistant: ${escapeHtml(entry.a)}</div>`
       )
       .join('');
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -76,10 +85,10 @@ export function renderDocuments(container) {
       .map(
         (doc) => `
       <tr>
-        <td>${doc.name}</td>
-        <td>${doc.type}</td>
-        <td>${doc.department}</td>
-        <td>${doc.uploadedAt}</td>
+        <td>${escapeHtml(doc.name)}</td>
+        <td>${escapeHtml(doc.type)}</td>
+        <td>${escapeHtml(doc.department)}</td>
+        <td>${escapeHtml(doc.uploadedAt)}</td>
         <td>
           <div class="actions">
             <button class="secondary" data-preview="${doc.id}">Preview</button>
@@ -95,7 +104,9 @@ export function renderDocuments(container) {
         selectedId = Number(btn.dataset.preview);
         const doc = documentService.getById(selectedId);
         preview.innerHTML = doc
-          ? `<strong>${doc.name}</strong><br/>Type: ${doc.type} · Dept: ${doc.department}<br/>Size: ${doc.sizeKb} KB<br/>${doc.summary}`
+          ? `<strong>${escapeHtml(doc.name)}</strong><br/>Type: ${escapeHtml(doc.type)} · Dept: ${escapeHtml(
+              doc.department
+            )}<br/>Size: ${escapeHtml(doc.sizeKb)} KB<br/>${escapeHtml(doc.summary)}`
           : 'Document not found.';
       });
     });
